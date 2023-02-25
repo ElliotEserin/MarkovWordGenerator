@@ -21,6 +21,7 @@ internal class Demo
         int wordCount;
         int ngram;
         int maxWordLength;
+        bool includeWordEndings;
 
         while (running)
         {
@@ -32,12 +33,14 @@ internal class Demo
             ngram = int.Parse(Console.ReadKey().KeyChar.ToString());
             Console.Write("\nEnter the max word length: (if this is less than ngram, it will be set to ngram, 0 means keep going) ");
             maxWordLength = int.Parse(Console.ReadKey().KeyChar.ToString());
+            Console.Write("\nInclude word endings? (y/n) This will include the probabilities that a word will end with a given state ");
+            includeWordEndings = Console.ReadKey().KeyChar == 'y';
 
             if (maxWordLength == 0) maxWordLength = 100;
 
             maxWordLength = Math.Max(ngram, maxWordLength);
 
-            var markov = WordGenerator.ModelFromTrainingData(trainingSets[dataset], ngram);
+            var markov = WordGenerator.ModelFromTrainingData(trainingSets[dataset], ngram, includeWordEndings);
 
             Console.WriteLine("\n");
 

@@ -102,32 +102,23 @@ namespace Markov
 
             for (int i = 0; i < wordsAs2DCharArray.Length; i++)
             {
-                for (int j = 0; j < wordsAs2DCharArray[i].Length - Ngram - (Ngram - 1); j++)
+                var nextWord = wordsAs2DCharArray[i];
+
+                var iterations = IncludeWordEndings ? nextWord.Length : nextWord.Length - (Ngram * 2 - 1);
+
+                for (int j = 0; j < iterations; j++)
                 {
                     string currentState = "", nextState = "";
 
                     for (int k = 0; k < Ngram; k++)
                     {
-                        currentState += wordsAs2DCharArray[i][j + k];
-                        nextState += wordsAs2DCharArray[i][j + k + Ngram];
+                        int nextIndex = j + k;
+
+                        if(nextWord.Length > nextIndex)
+                            currentState += nextWord[j + k];
+                        if(nextWord.Length > nextIndex + Ngram)
+                            nextState += nextWord[j + k + Ngram];
                     }
-
-                    AddToModel(model, currentState, nextState);
-                }
-
-                if (IncludeWordEndings)
-                {
-                    string currentState;
-                    string nextState = "";
-
-                    string currentWord = new(wordsAs2DCharArray[i]);
-
-                    if (currentWord.Length < Ngram)
-                    {
-                        continue;
-                    }
-
-                    currentState = currentWord.Substring(currentWord.Length - Ngram) ;
 
                     AddToModel(model, currentState, nextState);
                 }
@@ -148,7 +139,7 @@ namespace Markov
             Model = copy;
         }
 
-        void AddToModel(Dictionary<string, Dictionary<string, float>> model, string currentState, string nextState)
+        static void AddToModel(Dictionary<string, Dictionary<string, float>> model, string currentState, string nextState)
         {
             if (!model.ContainsKey(currentState))
             {
