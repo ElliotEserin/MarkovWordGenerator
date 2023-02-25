@@ -1,5 +1,12 @@
 # Procedural Word Generator
-This Procedural Word Generator is a program that uses Markov Chains to generate random words based on a given set of training data. The program takes in several parameters to customize the generated words, including the n-gram size, whether or not to include word endings, whether or not to include symbols, and whether or not to be case sensitive.
+This Procedural Word Generator is a C# algorithm that uses Markov Chains to generate random words based on a given set of training data. The program takes in several parameters to customize the generated words, including the n-gram size, whether or not to include word endings, whether or not to include symbols, and whether or not to be case sensitive.
+
+With a training set of a list of Dinosaurs, it might generate the output:
+ - yaningshan
+ - ksosaurus
+ - gjia
+ - yptops
+ - edrosaurus
 
 ## Installation
 To use the Procedural Word Generator, you'll need to have the following installed:
@@ -13,6 +20,9 @@ git clone https://github.com/ElliotEserin/MarkovWordGenerator.git
 cd MarkovWordGenerator
 dotnet build
 ```
+
+Whilst the project contains a demo and can be built to an Executable, it is intended to be used as part of larger projects with custom datasets.
+
 ## Usage
 To generate procedural words using the program, you'll need to provide a set of training data in the form of a string or string array. Here's an example of how to use the program:
 
