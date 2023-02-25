@@ -7,6 +7,8 @@ With a training set of a list of Dinosaurs, it might generate the output:
  - gjia
  - yptops
  - edrosaurus
+ 
+ Which are made up words that follow the same rules that dinosaur names follow.
 
 ## Installation
 To use the Procedural Word Generator, you'll need to have the following installed:
