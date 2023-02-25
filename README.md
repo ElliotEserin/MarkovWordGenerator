@@ -1,8 +1,46 @@
-# MarkovWordGenerator
-A random word generator using Markov chains and C#
+# Procedural Word Generator
+This Procedural Word Generator is a program that uses Markov Chains to generate random words based on a given set of training data. The program takes in several parameters to customize the generated words, including the n-gram size, whether or not to include word endings, whether or not to include symbols, and whether or not to be case sensitive.
 
-You can create an instance of the Markov class and provide a training set of example words you would like to mimic.
-From this you can then generate random words that follow the rules of the dataset.
-This works off of a statistics model called a Markov Chain - where the probability of any next state depends only on the state before it.
+## Installation
+To use the Procedural Word Generator, you'll need to have the following installed:
 
-If you want to learn more, check out its [Wikipedia](https://en.wikipedia.org/wiki/Markov_chain) page or [Normalized Nerd's](https://www.youtube.com/watch?v=i3AkTO9HLXo&list=PLM8wYQRetTxBkdvBtz-gw8b9lcVkdXQKV) playlist on YouTube which was a heavy inspiration for the code in this project!
+ - [**.NET Core SDK**](https://dotnet.microsoft.com/en-us/download)
+
+Once you have the .NET Core SDK installed, you can clone this repository and build the program using the following commands:
+
+```
+git clone https://github.com/your-username/procedural-word-generator.git
+cd procedural-word-generator
+dotnet build
+```
+## Usage
+To generate procedural words using the program, you'll need to provide a set of training data in the form of a string or string array. Here's an example of how to use the program:
+
+```
+using Markov;
+
+string[] trainingData = new string[]
+{
+    "hello",
+    "world",
+    "foo",
+    "bar",
+    "baz",
+    "qux"
+};
+
+int ngram = 2;
+bool includeWordEndings = true;
+bool caseSensitive = false;
+bool includeSymbols = false;
+
+int characterLimit = 10;
+
+WordGenerator wordGenerator = new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
+string generatedWord = wordGenerator.GenerateWord(characterLimit);
+Console.WriteLine(generatedWord); // Output: "quxbaz"
+```
+In this example, we're using a set of six words as our training data. We're using a 2-gram size, meaning that the program will generate words by looking at pairs of letters in the training data. We're including word endings in the generated words, but not symbols. We're also not being case sensitive, so the program will treat "Foo" and "foo" as the same word.
+
+License
+This program is licensed under the [**MIT License.**](https://opensource.org/license/mit/)
