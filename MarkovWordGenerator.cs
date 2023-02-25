@@ -32,6 +32,14 @@ namespace Markov
             Model = new();
             GenerateModel(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
+
+        public WordGenerator(string[] trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
+        {
+            string data = string.Join(' ', trainingData);
+
+            Model = new();
+            GenerateModel(data, ngram, includeWordEndings, caseSensitive, includeSymbols);
+        }
         /// <summary>
         /// This will generate an object with a Markov model based off of a provided <paramref name="trainingData"/>.
         /// </summary>
@@ -40,6 +48,11 @@ namespace Markov
         /// <param name="caseSensitive">if true, the model will consider "a" and "A" as two different characters with different probabilities of occurring</param>
         /// <param name="includeSymbols">if true, symbols (.?!,'" etc.) will be included in the model</param>
         public static WordGenerator ModelFromTrainingData(string trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
+        {
+            return new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
+        }
+
+        public static WordGenerator ModelFromTrainingData(string[] trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
             return new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
@@ -98,8 +111,6 @@ namespace Markov
         /// <param name="wordsAs2DCharArray"></param>
         void GenerateMarkovModel(char[][] wordsAs2DCharArray)
         {
-            Dictionary<string, Dictionary<string, float>> model = new();
-
             for (int i = 0; i < wordsAs2DCharArray.Length; i++)
             {
                 var nextWord = wordsAs2DCharArray[i];
@@ -120,13 +131,13 @@ namespace Markov
                             nextState += nextWord[j + k + Ngram];
                     }
 
-                    AddToModel(model, currentState, nextState);
+                    AddToModel(Model, currentState, nextState);
                 }
             }
 
-            var copy = model.ToDictionary(entry => entry.Key, entry => entry.Value.ToDictionary(entry => entry.Key, entry => entry.Value));
+            var copy = Model.ToDictionary(entry => entry.Key, entry => entry.Value.ToDictionary(entry => entry.Key, entry => entry.Value));
 
-            foreach (var pair in model)
+            foreach (var pair in Model)
             {
                 int total = (int)Enumerable.Sum(pair.Value.Values);
 
