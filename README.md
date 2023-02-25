@@ -23,7 +23,7 @@ cd MarkovWordGenerator
 dotnet build
 ```
 
-Whilst the project contains a demo and can be built to an Executable, it is intended to be used as part of larger projects with custom datasets.
+Whilst the project contains a demo, it is intended to be used as part of larger projects with custom datasets.
 
 ## Usage
 To generate procedural words using the program, you'll need to provide a set of training data in the form of a string or string array. Here's an example of how to use the program:
