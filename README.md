@@ -9,8 +9,8 @@ To use the Procedural Word Generator, you'll need to have the following installe
 Once you have the .NET Core SDK installed, you can clone this repository and build the program using the following commands:
 
 ```
-git clone https://github.com/your-username/procedural-word-generator.git
-cd procedural-word-generator
+git clone https://github.com/ElliotEserin/MarkovWordGenerator.git
+cd MarkovWordGenerator
 dotnet build
 ```
 ## Usage
