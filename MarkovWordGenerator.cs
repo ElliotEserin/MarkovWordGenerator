@@ -14,10 +14,9 @@ namespace Markov
     public class WordGenerator
     {
         #region properties
-        private Dictionary<string, Dictionary<string, float>> model;
-
-        public Dictionary<string, Dictionary<string, float>> Model { get => model; }
-        public int ngram;
+        public Dictionary<string, Dictionary<string, float>> Model { get; private set; }
+        public int Ngram { get; private set; }
+        public bool IncludeWordEndings { get; private set; }
         #endregion
 
         #region constructors and factories
@@ -28,11 +27,10 @@ namespace Markov
         /// <param name="ngram">the number of characters included in each state. A lower ngram will produce more randomnes</param>
         /// <param name="caseSensitive">if true, the model will consider "a" and "A" as two different characters with different probabilities of occurring</param>
         /// <param name="includeSymbols">if true, symbols (.?!,'" etc.) will be included in the model</param>
-        public WordGenerator(string trainingData, int ngram = 2, bool caseSensitive = false, bool includeSymbols = false)
+        public WordGenerator(string trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
-            this.ngram = ngram;
-            model = new();
-            GenerateModel(trainingData, ngram, caseSensitive, includeSymbols);
+            Model = new();
+            GenerateModel(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
         /// <summary>
         /// This will generate an object with a Markov model based off of a provided <paramref name="trainingData"/>.
@@ -41,16 +39,17 @@ namespace Markov
         /// <param name="ngram">the number of characters included in each state. A lower ngram will produce more randomnes</param>
         /// <param name="caseSensitive">if true, the model will consider "a" and "A" as two different characters with different probabilities of occurring</param>
         /// <param name="includeSymbols">if true, symbols (.?!,'" etc.) will be included in the model</param>
-        public static WordGenerator ModelFromTrainingData(string trainingData, int ngram = 2, bool caseSensitive = false, bool includeSymbols = false)
+        public static WordGenerator ModelFromTrainingData(string trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
-            return new WordGenerator(trainingData, ngram, caseSensitive, includeSymbols);
+            return new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
         #endregion
 
         #region generating markov model
-        public void GenerateModel(string trainingData, int ngram = 2, bool caseSensitive = false, bool includeSymbols = false)
+        public void GenerateModel(string trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
-            this.ngram = ngram;
+            Ngram = ngram;
+            IncludeWordEndings = includeWordEndings;
 
             if(string.IsNullOrEmpty(trainingData) || trainingData.Length < ngram * 2)
             {
@@ -103,34 +102,34 @@ namespace Markov
 
             for (int i = 0; i < wordsAs2DCharArray.Length; i++)
             {
-                for (int j = 0; j < wordsAs2DCharArray[i].Length - ngram - (ngram - 1); j++)
+                for (int j = 0; j < wordsAs2DCharArray[i].Length - Ngram - (Ngram - 1); j++)
                 {
                     string currentState = "", nextState = "";
 
-                    for (int k = 0; k < ngram; k++)
+                    for (int k = 0; k < Ngram; k++)
                     {
                         currentState += wordsAs2DCharArray[i][j + k];
-                        nextState += wordsAs2DCharArray[i][j + k + ngram];
+                        nextState += wordsAs2DCharArray[i][j + k + Ngram];
                     }
 
-                    if (!model.ContainsKey(currentState))
+                    AddToModel(model, currentState, nextState);
+                }
+
+                if (IncludeWordEndings)
+                {
+                    string currentState;
+                    string nextState = "";
+
+                    string currentWord = new(wordsAs2DCharArray[i]);
+
+                    if (currentWord.Length < Ngram)
                     {
-                        model[currentState] = new()
-                        {
-                            [nextState] = 1
-                        };
+                        continue;
                     }
-                    else
-                    {
-                        if (model[currentState].ContainsKey(nextState))
-                        {
-                            model[currentState][nextState] += 1;
-                        }
-                        else
-                        {
-                            model[currentState][nextState] = 1;
-                        }
-                    }
+
+                    currentState = currentWord.Substring(currentWord.Length - Ngram) ;
+
+                    AddToModel(model, currentState, nextState);
                 }
             }
 
@@ -146,7 +145,29 @@ namespace Markov
                 }
             }
 
-            this.model = copy;
+            Model = copy;
+        }
+
+        void AddToModel(Dictionary<string, Dictionary<string, float>> model, string currentState, string nextState)
+        {
+            if (!model.ContainsKey(currentState))
+            {
+                model[currentState] = new()
+                {
+                    [nextState] = 1
+                };
+            }
+            else
+            {
+                if (model[currentState].ContainsKey(nextState))
+                {
+                    model[currentState][nextState] += 1;
+                }
+                else
+                {
+                    model[currentState][nextState] = 1;
+                }
+            }
         }
         #endregion
 
@@ -184,12 +205,12 @@ namespace Markov
             //easiest explained with an example: an ngram of 2 will result in each iteration adding 2 new characters
             //so we need to divide the character limit by the number of characters added per iteration to know how many to do.
             //this will automatically truncate it down
-            var iterations = characterLimit / ngram;
+            var iterations = characterLimit / Ngram;
 
             //if character limit is less than the number of characters added per iteration (ngram) then you will get no iterations, and no result. So we throw an error.
             if (iterations <= 0)
             {
-                throw new ArgumentException($"characterLimit must be at least equal to ngram: {ngram}");
+                throw new ArgumentException($"characterLimit must be at least equal to ngram: {Ngram}");
             }
 
             int n = 0;
@@ -201,7 +222,7 @@ namespace Markov
 
             name += currentState;
 
-            if (!model.ContainsKey(currentState))
+            if (!Model.ContainsKey(currentState))
             {
                 throw new ArgumentException($"the starting state must be in the model. (start state was {currentState})");
             }
@@ -209,14 +230,14 @@ namespace Markov
             while (n < iterations)
             {
                 //Finish if we meet a state that has no possible next states
-                if (!model.ContainsKey(currentState))
+                if (!Model.ContainsKey(currentState))
                 {
                     return name;
                 }
 
                 float probability = (float)rand.NextDouble();
 
-                foreach (var state in model[currentState])
+                foreach (var state in Model[currentState])
                 {
                     probability -= state.Value;
 
@@ -240,7 +261,7 @@ namespace Markov
         #region private methods
         string GenerateStartingCharacters(Random rand)
         {
-            return model.ElementAt(rand.Next(0, model.Count)).Key;
+            return Model.ElementAt(rand.Next(0, Model.Count)).Key;
         }
         #endregion
     }

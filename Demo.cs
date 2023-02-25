@@ -33,9 +33,9 @@ internal class Demo
             Console.Write("\nEnter the max word length: (if this is less than ngram, it will be set to ngram, 0 means keep going) ");
             maxWordLength = int.Parse(Console.ReadKey().KeyChar.ToString());
 
-            ngram = Math.Max(ngram, maxWordLength);
-
             if (maxWordLength == 0) maxWordLength = 100;
+
+            maxWordLength = Math.Max(ngram, maxWordLength);
 
             var markov = WordGenerator.ModelFromTrainingData(trainingSets[dataset], ngram);
 
