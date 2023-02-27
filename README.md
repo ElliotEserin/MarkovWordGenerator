@@ -50,9 +50,11 @@ int characterLimit = 10;
 
 WordGenerator wordGenerator = new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
 string generatedWord = wordGenerator.GenerateWord(characterLimit);
-Console.WriteLine(generatedWord); // Output: "quxbaz"
+Console.WriteLine(generatedWord);
 ```
 In this example, we're using a set of six words as our training data. We're using a 2-gram size, meaning that the program will generate words by looking at pairs of letters in the training data. We're including word endings in the generated words, but not symbols. We're also not being case sensitive, so the program will treat "Foo" and "foo" as the same word.
+
+NOTE: this will not work well with datasets this small! The more words you include the more variety you will get.
 
 ## License
 This program is licensed under the [**MIT License.**](https://opensource.org/license/mit/)
