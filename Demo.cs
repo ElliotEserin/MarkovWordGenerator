@@ -40,7 +40,13 @@ internal class Demo
 
             maxWordLength = Math.Max(ngram, maxWordLength);
 
-            var markov = WordGenerator.ModelFromTrainingData(trainingSets[dataset], ngram, includeWordEndings);
+            //var markov = WordGenerator.ModelFromTrainingData(trainingSets[dataset], ngram, includeWordEndings);
+
+            var markov = new MarkovBuilder()
+                .UsingData(trainingSets[dataset])
+                .WithNgram(ngram)
+                .UsingWordEndings(includeWordEndings)
+                .Build();
 
             Console.WriteLine("\n");
 

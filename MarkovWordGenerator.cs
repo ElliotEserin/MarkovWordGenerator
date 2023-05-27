@@ -25,6 +25,7 @@ namespace Markov
         /// </summary>
         /// <param name="trainingData">space separated list of words to use as training for the model</param>
         /// <param name="ngram">the number of characters included in each state. A lower ngram will produce more randomnes</param>
+        /// <param name="includeWordEndings">if true, the model will include all states up to the final letter - this will result in words with more predictable endings but might cut the word short</param>
         /// <param name="caseSensitive">if true, the model will consider "a" and "A" as two different characters with different probabilities of occurring</param>
         /// <param name="includeSymbols">if true, symbols (.?!,'" etc.) will be included in the model</param>
         public WordGenerator(string trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
@@ -32,7 +33,6 @@ namespace Markov
             Model = new();
             GenerateModel(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
-
         public WordGenerator(string[] trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
             string data = string.Join(' ', trainingData);
@@ -40,6 +40,7 @@ namespace Markov
             Model = new();
             GenerateModel(data, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
+
         /// <summary>
         /// This will generate an object with a Markov model based off of a provided <paramref name="trainingData"/>.
         /// </summary>
@@ -51,7 +52,6 @@ namespace Markov
         {
             return new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
         }
-
         public static WordGenerator ModelFromTrainingData(string[] trainingData, int ngram = 2, bool includeWordEndings = true, bool caseSensitive = false, bool includeSymbols = false)
         {
             return new WordGenerator(trainingData, ngram, includeWordEndings, caseSensitive, includeSymbols);
@@ -73,6 +73,7 @@ namespace Markov
 
             GenerateMarkovModel(cleanedText);
         }
+
         /// <summary>
         /// This is for filtering out any unwanted characters and formatting the text correctly
         /// </summary>
@@ -80,7 +81,7 @@ namespace Markov
         /// <param name="caseSensitive"></param>
         /// <param name="includeSymbols"></param>
         /// <returns>formatted words split into char arrays</returns>
-        char[][] CleanText(string trainingData, bool caseSensitive, bool includeSymbols)
+        static char[][] CleanText(string trainingData, bool caseSensitive, bool includeSymbols)
         {
             List<char[]> cleanedText = new();
 
